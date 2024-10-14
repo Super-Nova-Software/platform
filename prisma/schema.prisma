@@ -1,0 +1,125 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  fullname    String
+  email       String    @unique
+  password    String
+  clerkId     String    @unique
+  role        Role      
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  // Relations
+  stripeId    String?   // Optional field for Stripe ID
+  lawFirm     LawFirm?  @relation(fields: [lawFirmId], references: [id], onDelete: Cascade)
+  lawFirmId   String?   @db.Uuid
+
+  bookings     Booking[]        
+  conversations Conversation[]  
+  messages     Message[]        // Change from 'Message' to 'messages' to match plural convention
+}
+
+model LawFirm {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name      String
+  address   String
+  phone     String
+  email     String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  
+  // Relations
+  users     User[]       
+  bookings  Booking[]     
+  chatBots  ChatBot[]     
+  helpDesks HelpDesk[]   
+  lawyers   Lawyer[]  // Change from 'Lawyer' to 'lawyers' to match plural convention
+}
+
+model Lawyer {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  bio       String
+  rating    Float     @default(0)
+  lawFirm   LawFirm?  @relation(fields: [lawFirmId], references: [id], onDelete: Cascade)
+  lawFirmId String?   @db.Uuid
+  
+  // Relations
+  bookings  Booking[]  // Change from 'Booking' to 'bookings' to match plural convention
+}
+
+model Booking {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  date       DateTime
+  slot       String
+  status     BookingStatus  
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String   @db.Uuid
+  lawyer     Lawyer?  @relation(fields: [lawyerId], references: [id], onDelete: Cascade)
+  lawyerId   String?  @db.Uuid
+  lawFirm    LawFirm  @relation(fields: [lawFirmId], references: [id], onDelete: Cascade)
+  lawFirmId  String   @db.Uuid
+  
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model ChatBot {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  welcomeMessage String?
+  icon           String?
+  background     String?
+  textColor      String?
+  helpdesk       Boolean  @default(false)
+  lawFirm        LawFirm? @relation(fields: [lawFirmId], references: [id], onDelete: Cascade)
+  lawFirmId      String?  @db.Uuid
+}
+
+model HelpDesk {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  question   String
+  answer     String
+  lawFirm    LawFirm?  @relation(fields: [lawFirmId], references: [id], onDelete: Cascade)
+  lawFirmId  String?   @db.Uuid
+}
+
+model Conversation {
+  id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  
+  // Relations
+  participants User[]    
+  messages     Message[]  // Change from 'Message' to 'messages' to match plural convention
+}
+
+model Message {
+  id            String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  content       String
+  sentAt        DateTime   @default(now())
+  seen          Boolean    @default(false)
+  sender        User       @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  senderId      String     @db.Uuid
+  conversation  Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  conversationId String    @db.Uuid
+}
+
+enum Role {
+  USER
+  LAWYER
+  ADMIN
+  OFFICE
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
