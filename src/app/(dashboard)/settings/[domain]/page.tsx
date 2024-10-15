@@ -9,23 +9,23 @@ import React from 'react'
 type Props = { params: { domain: string } }
 
 const DomainSettingsPage = async ({ params }: Props) => {
-  const domain = await onGetCurrentDomainInfo(params.domain)
-  if (!domain) redirect('/dashboard')
+  const cases = await onGetCurrentDomainInfo(params.domain)
+  if (!cases) redirect('/dashboard')
 
   return (
     <>
       <InfoBar />
       <div className="overflow-y-auto w-full chat-window flex-1 h-0">
         <SettingsForm
-          plan={domain.subscription?.plan!}
-          chatBot={domain.domains[0].chatBot}
-          id={domain.domains[0].id}
-          name={domain.domains[0].name}
+          plan={cases.subscription?.plan!}
+          // chatBot={domain.Case[0].}
+          id={cases.Case[0].id}
+          name={cases.Case[0].name}
         />
-        <BotTrainingForm id={domain.domains[0].id} />
+        <BotTrainingForm id={cases.Case[0].id} />
         <ProductTable
-          id={domain.domains[0].id}
-          products={domain.domains[0].products || []}
+          id={cases.Case[0].id}
+          document={cases.Case[0].Document || []}
         />
       </div>
     </>

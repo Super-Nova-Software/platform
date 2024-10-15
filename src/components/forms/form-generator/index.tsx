@@ -1,5 +1,6 @@
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { strict } from 'assert'
 import { ErrorMessage } from '@hookform/error-message'
 import React from 'react'
 import { FieldErrors, FieldValues, UseFormRegister } from 'react-hook-form'
@@ -11,13 +12,14 @@ type Props = {
   options?: { value: string; label: string; id: string }[]
   label?: string
   placeholder: string
-  register: UseFormRegister<FieldValues>
+  register: UseFormRegister<any>
   name: string
   errors: FieldErrors<FieldValues>
   lines?: number
   form?: string
   defaultValue?: string
 }
+
 const FormGenerator = ({
   errors,
   inputType,
@@ -115,6 +117,7 @@ const FormGenerator = ({
           />
         </Label>
       )
+      defualt: return <></>
   }
 }
 

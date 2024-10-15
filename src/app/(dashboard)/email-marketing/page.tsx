@@ -4,7 +4,9 @@ import InfoBar from '@/components/infobar'
 import { currentUser } from '@clerk/nextjs/server'
 import React from 'react'
 
-const Page = async () => {
+type Props = {}
+
+const Page = async (props: Props) => {
   const user = await currentUser()
 
   if (!user) return null
@@ -15,9 +17,9 @@ const Page = async () => {
     <>
       <InfoBar></InfoBar>
       <EmailMarketing
-        campaign={campaigns?.campaign}
-        subscription={customers?.subscription}
-        domains={customers?.domains}
+        campaign={campaigns?.campaign!}
+        subscription={customers?.subscription!}
+        domains={customers?.domains!}
       />
     </>
   )

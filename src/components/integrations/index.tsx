@@ -21,7 +21,7 @@ const IntegrationsList = ({ connections }: Props) => {
               <div className="">
                 <div className="w-10 h-10 relative">
                   <Image
-                    sizes="100vw"
+                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     src={`https://ucarecdn.com/${item.logo}/`}
                     alt="Logo"
                     fill

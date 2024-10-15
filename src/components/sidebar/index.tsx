@@ -6,23 +6,24 @@ import MaxMenu from './maximized-menu'
 import { MinMenu } from './minimized-menu'
 
 type Props = {
-  domains:
+  Cases:
     | {
         id: string
         name: string
-        icon: string
+        description: string |null
+        icon: string |null
       }[]
     | null
     | undefined
 }
 
-const SideBar = ({ domains }: Props) => {
+const SideBar = ({ Cases }: Props) => {
   const { expand, onExpand, page, onSignOut } = useSideBar()
 
   return (
     <div
       className={cn(
-        'h-full w-[60px] fill-mode-forwards fixed md:relative',
+        'bg-cream dark:bg-neutral-950 h-full w-[60px] fill-mode-forwards fixed md:relative',
         expand == undefined && '',
         expand == true
           ? 'animate-open-sidebar'
@@ -31,14 +32,14 @@ const SideBar = ({ domains }: Props) => {
     >
       {expand ? (
         <MaxMenu
-          domains={domains}
+          Cases={Cases}
           current={page!}
           onExpand={onExpand}
           onSignOut={onSignOut}
         />
       ) : (
         <MinMenu
-          domains={domains}
+          Cases={Cases}
           onShrink={onExpand}
           current={page!}
           onSignOut={onSignOut}

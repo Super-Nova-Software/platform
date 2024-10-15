@@ -114,14 +114,11 @@ export const saveAnswers = async (
 
 export const onGetAllBookingsForCurrentUser = async (clerkId: string) => {
   try {
+    const user = await currentUser()
     const bookings = await client.bookings.findMany({
       where: {
-        Customer: {
-          Domain: {
-            User: {
-              clerkId,
-            },
-          },
+        client: {
+          clerkId: user?.id,
         },
       },
       select: {
@@ -129,11 +126,10 @@ export const onGetAllBookingsForCurrentUser = async (clerkId: string) => {
         slot: true,
         createdAt: true,
         date: true,
-        email: true,
-        domainId: true,
-        Customer: {
+        caseId: true,
+        client: {
           select: {
-            Domain: {
+            Case: {
               select: {
                 name: true,
               },
@@ -159,11 +155,11 @@ export const getUserAppointments = async () => {
     if (user) {
       const bookings = await client.bookings.count({
         where: {
-          Customer: {
-            Domain: {
-              User: {
-                clerkId: user.id,
-              },
+          client: {
+            Case: {
+              // lawyer: {
+              //   clerkId: user.id,
+              // },
             },
           },
         },

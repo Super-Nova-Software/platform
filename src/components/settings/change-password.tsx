@@ -6,7 +6,9 @@ import FormGenerator from '../forms/form-generator'
 import { Button } from '../ui/button'
 import { Loader } from '../loader'
 
-const ChangePassword = () => {
+type Props = {}
+
+const ChangePassword = (props: Props) => {
   const { register, errors, onChangePassword, loading } = useChangePassword()
 
   return (
@@ -38,7 +40,7 @@ const ChangePassword = () => {
             type="text"
             inputType="input"
           />
-          <Button className=" text-gray-700 font-semibold">
+          <Button className="bg-grandis text-gray-700 font-semibold">
             <Loader loading={loading}>Change Password</Loader>
           </Button>
         </div>

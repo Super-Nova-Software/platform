@@ -38,10 +38,9 @@ export const onGetAllCustomers = async (id: string) => {
     if (customers) {
       return customers
     }
-  } catch (error) {
-    console.error(error)
-  }
+  } catch (error) {}
 }
+
 export const onGetAllCampaigns = async (id: string) => {
   try {
     const campaigns = await client.user.findUnique({
@@ -95,18 +94,18 @@ export const onCreateMarketingCampaign = async (name: string) => {
 }
 
 export const onSaveEmailTemplate = async (
-  // template: string,
-  // campainId: string
+  template: string,
+  campainId: string
 ) => {
   try {
-    // const newTemplate = await client.campaign.update({
-    //   where: {
-    //     id: campainId,
-    //   },
-    //   data: {
-    //     template,
-    //   },
-    // })
+    const newTemplate = await client.campaign.update({
+      where: {
+        id: campainId,
+      },
+      data: {
+        template,
+      },
+    })
 
     return { status: 200, message: 'Email template created' }
   } catch (error) {
@@ -132,9 +131,7 @@ export const onAddCustomersToEmail = async (
     if (customerAdd) {
       return { status: 200, message: 'Customer added to campaign' }
     }
-  } catch (error) {
-    console.log(error)
-  }
+  } catch (error) {}
 }
 
 export const onBulkMailer = async (email: string[], campaignId: string) => {
@@ -170,7 +167,7 @@ export const onBulkMailer = async (email: string[], campaignId: string) => {
         text: JSON.parse(template.template),
       }
 
-      transporter.sendMail(mailOptions, function (error: unknown, info: { response: string }) {
+      transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
           console.log(error)
         } else {

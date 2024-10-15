@@ -1,10 +1,11 @@
 'use client'
+import { useToast } from '@/components/ui/use-toast'
 import { usePathname, useRouter } from 'next/navigation'
+import React from 'react'
 import { useEffect, useState } from 'react'
 import { useChatContext } from './user-chat-context'
 import { onGetConversationMode, onToggleRealtime } from '@/actions/conversation'
 import { useClerk } from '@clerk/nextjs'
-import { useToast } from '@/components/ui/use-toast'
 
 const useSideBar = () => {
   const [expand, setExpand] = useState<boolean | undefined>(undefined)
@@ -16,11 +17,11 @@ const useSideBar = () => {
 
   const { chatRoom } = useChatContext()
 
-  const onActivateRealtime = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onActivateRealtime = async (e: any) => {
     try {
       const realtime = await onToggleRealtime(
         chatRoom!,
-        e.target.checked
+        e.target.ariaChecked == 'true' ? false : true
       )
       if (realtime) {
         setRealtime(realtime.chatRoom.live)
@@ -33,6 +34,7 @@ const useSideBar = () => {
       console.log(error)
     }
   }
+
   const onGetCurrentMode = async () => {
     setLoading(true)
     const mode = await onGetConversationMode(chatRoom!)

@@ -11,16 +11,17 @@ import { CardDescription } from '../ui/card'
 import { Separator } from '../ui/separator'
 
 type Props = {
-  domains?:
+  cases?:
     | {
         name: string
         id: string
-        icon: string
+        description: string | null
+        icon: string | null
       }[]
     | undefined
 }
 
-const ConversationMenu = ({ domains }: Props) => {
+const ConversationMenu = ({ cases }: Props) => {
   const { register, chatRooms, loading, onGetActiveChatMessages } =
     useConversation()
 
@@ -29,7 +30,7 @@ const ConversationMenu = ({ domains }: Props) => {
       <TabsMenu triggers={TABS_MENU}>
         <TabsContent value="unread">
           <ConversationSearch
-            domains={domains}
+            cases={cases}
             register={register}
           />
           <div className="flex flex-col">

@@ -13,13 +13,12 @@ export const getUserClients = async () => {
   try {
     const user = await currentUser()
     if (user) {
-      const clients = await client.customer.count({
+      const clients = await client.bookings.count({
         where: {
-          Domain: {
-            User: {
-              clerkId: user.id,
-            },
+          client: {
+            clerkId: user.id,
           },
+          status: 'PENDING',
         },
       })
       if (clients) {
@@ -30,7 +29,6 @@ export const getUserClients = async () => {
     console.log(error)
   }
 }
-
 export const getUserBalance = async () => {
   try {
     const user = await currentUser()
@@ -74,7 +72,7 @@ export const getUserPlanInfo = async () => {
         select: {
           _count: {
             select: {
-              domains: true,
+              Case: true,
             },
           },
           subscription: {
@@ -89,7 +87,7 @@ export const getUserPlanInfo = async () => {
         return {
           plan: plan.subscription?.plan,
           credits: plan.subscription?.credits,
-          domains: plan._count.domains,
+          Cases: plan._count.Case,
         }
       }
     }
@@ -102,22 +100,22 @@ export const getUserTotalProductPrices = async () => {
   try {
     const user = await currentUser()
     if (user) {
-      const products = await client.product.findMany({
+      const products = await client.document.findMany({
         where: {
-          Domain: {
-            User: {
+          case: {
+            client: {
               clerkId: user.id,
             },
           },
         },
         select: {
-          price: true,
+          file: true,
         },
       })
 
       if (products) {
-        const total = products.reduce((total: number, next: { price: number }) => {
-          return total + next.price
+        const total = products.reduce((total) => {
+          return total
         }, 0)
 
         return total

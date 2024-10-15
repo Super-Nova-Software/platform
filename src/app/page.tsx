@@ -11,13 +11,11 @@ import {
 } from '@/components/ui/card'
 import { pricingCards } from '@/constants/landing-page'
 import clsx from 'clsx'
-import {  Check } from 'lucide-react'
+import { ArrowRightCircleIcon, Check } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import parse from 'html-react-parser'
 import { getMonthName } from '@/lib/utils'
-
-import React from 'react'
 
 export default async function Home() {
   const posts:
@@ -49,7 +47,7 @@ export default async function Home() {
             Your AI powered sales assistant! Embed Corinna AI into any website
             with just a snippet of code!
           </p>
-          <Button className="bg-orange font-bold px-4">
+          <Button className="bg-orange font-bold text-white px-4">
             Start For Free
           </Button>
           <Image
@@ -102,7 +100,7 @@ export default async function Home() {
               </div>
               <Link
                 href={`/dashbord?plan=${card.title}`}
-                className=" border-orange border-2 p-2 w-full text-center font-bold rounded-md"
+                className="bg-[#f3d299] border-orange border-2 p-2 w-full text-center font-bold rounded-md"
               >
                 Get Started
               </Link>

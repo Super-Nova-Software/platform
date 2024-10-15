@@ -9,17 +9,18 @@ type Props = {
   onExpand(): void
   current: string
   onSignOut(): void
-  domains:
+  Cases:
     | {
         id: string
         name: string
+        description: string | null
         icon: string | null
       }[]
     | null
     | undefined
 }
 
-const MaxMenu = ({ current, domains, onExpand, onSignOut }: Props) => {
+const MaxMenu = ({ current, Cases, onExpand, onSignOut }: Props) => {
   return (
     <div className="py-3 px-4 flex flex-col h-full">
       <div className="flex justify-between items-center">
@@ -51,7 +52,7 @@ const MaxMenu = ({ current, domains, onExpand, onSignOut }: Props) => {
               current={current}
             />
           ))}
-          <DomainMenu domains={domains} />
+          <DomainMenu Cases={Cases} />
         </div>
         <div className="flex flex-col">
           <p className="text-xs text-gray-500 mb-3">OPTIONS</p>

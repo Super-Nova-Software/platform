@@ -34,16 +34,16 @@ export const useSignInForm = () => {
           })
           router.push('/dashboard')
         }
-      } catch (error: unknown) {
+      } catch (error: any) {
         setLoading(false)
-        if (typeof error === 'object' && error !== null && 'errors' in error && Array.isArray(error.errors) && error.errors.length > 0 && 'code' in error.errors[0] && error.errors[0].code === 'form_password_incorrect') {
+        if (error.errors[0].code === 'form_password_incorrect')
           toast({
             title: 'Error',
             description: 'email/password is incorrect try again',
           })
-        }
       }
-    }  )
+    }
+  )
 
   return {
     methods,

@@ -2,7 +2,7 @@
 
 import { client } from '@/lib/prisma'
 import { currentUser, redirectToSignIn } from '@clerk/nextjs/server'
-import { onGetAllAccountDomains } from '../settings'
+import { onGetAllAccountCase } from '../settings'
 
 export const onCompleteUserRegistration = async (
   fullname: string,
@@ -29,11 +29,11 @@ export const onCompleteUserRegistration = async (
     if (registered) {
       return { status: 200, user: registered }
     }
-  } catch (error: unknown) {
-    console.error('Error during user registration:', error)
+  } catch (error) {
     return { status: 400 }
   }
 }
+
 export const onLoginUser = async () => {
   const user = await currentUser()
   if (!user) redirectToSignIn()
@@ -50,10 +50,10 @@ export const onLoginUser = async () => {
         },
       })
       if (authenticated) {
-        const domains = await onGetAllAccountDomains()
-        return { status: 200, user: authenticated, domain: domains?.domains }
+        const cases = await onGetAllAccountCase()
+        return { status: 200, user: authenticated, Case : cases?.Case }
       }
-    } catch {
+    } catch (error) {
       return { status: 400 }
     }
   }

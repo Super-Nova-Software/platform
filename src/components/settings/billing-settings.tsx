@@ -2,13 +2,15 @@ import { onGetSubscriptionPlan } from '@/actions/settings'
 import React from 'react'
 import Section from '../section-label'
 import { Card, CardContent, CardDescription } from '../ui/card'
-import { CheckCircle2, Plus } from 'lucide-react'
+import { Check, CheckCircle2, Plus } from 'lucide-react'
 import { pricingCards } from '@/constants/landing-page'
 import Modal from '../mondal'
 import SubscriptionForm from '../forms/settings/subscription-form'
 import Image from 'next/image'
 
-const BillingSettings = async () => {
+type Props = {}
+
+const BillingSettings = async (props: Props) => {
   const plan = await onGetSubscriptionPlan()
   const planFeatures = pricingCards.find(
     (card) => card.title.toUpperCase() === plan?.toUpperCase()
@@ -30,7 +32,7 @@ const BillingSettings = async () => {
           description="Tell us about yourself! What do you do? Let’s tailor your experience so it best suits you."
           trigger={
             plan && plan === 'STANDARD' ? (
-              <Card className="w-full cursor-pointer h-[270px] flex justify-center items-center">
+              <Card className="border-dashed bg-cream border-gray-400 w-full cursor-pointer h-[270px] flex justify-center items-center">
                 <CardContent className="flex gap-2 items-center">
                   <div className="rounded-full border-2 p-1">
                     <Plus className="text-gray-400" />

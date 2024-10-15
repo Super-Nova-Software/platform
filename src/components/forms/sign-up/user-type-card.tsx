@@ -12,8 +12,8 @@ type Props = {
   title: string
   text: string
   register: UseFormRegister<FieldValues>
-  userType: 'owner' | 'lawyer' | 'client'
-  setUserType: React.Dispatch<React.SetStateAction<'owner' | 'lawyer' | 'client'>>
+  userType: 'owner' | 'student'
+  setUserType: React.Dispatch<React.SetStateAction<'owner' | 'student'>>
 }
 
 const UserTypeCard = ({

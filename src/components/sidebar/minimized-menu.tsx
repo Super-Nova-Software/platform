@@ -1,5 +1,7 @@
 import { SIDE_BAR_MENU } from '@/constants/menu'
+
 import React from 'react'
+
 import { LogOut, MonitorSmartphone } from 'lucide-react'
 import { MenuLogo } from '@/icons/menu-logo'
 import MenuItem from './menu-item'
@@ -9,10 +11,11 @@ type MinMenuProps = {
   onShrink(): void
   current: string
   onSignOut(): void
-  domains:
+  Cases:
     | {
         id: string
         name: string
+        description: string | null
         icon: string | null
       }[]
     | null
@@ -23,7 +26,7 @@ export const MinMenu = ({
   onShrink,
   current,
   onSignOut,
-  domains,
+  Cases,
 }: MinMenuProps) => {
   return (
     <div className="p-3 flex flex-col items-center h-full">
@@ -42,7 +45,7 @@ export const MinMenu = ({
           ))}
           <DomainMenu
             min
-            domains={domains}
+            Cases={Cases}
           />
         </div>
         <div className="flex flex-col">

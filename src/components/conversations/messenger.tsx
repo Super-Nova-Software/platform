@@ -2,7 +2,7 @@
 import { useChatWindow } from '@/hooks/conversation/use-conversation'
 import React from 'react'
 import { Loader } from '../loader'
-// import Bubble from '../chatbot/bubble'
+import Bubble from '../chatbot/bubble'
 import { Input } from '../ui/input'
 import { Button } from '../ui/button'
 import { PaperclipIcon } from 'lucide-react'
@@ -28,15 +28,14 @@ const Messenger = (props: Props) => {
           >
             {chats.length ? (
               chats.map((chat) => (
-                // <Bubble
-                //   key={chat.id}
-                //   message={{
-                //     role: chat.role!,
-                //     content: chat.message,
-                //   }}
-                //   createdAt={chat.createdAt}
-                // />
-         <></>
+                <Bubble
+                  key={chat.id}
+                  message={{
+                    role: chat.role!,
+                    content: chat.message,
+                  }}
+                  createdAt={chat.createdAt}
+                />
               ))
             ) : (
               <div>No Chat Selected</div>

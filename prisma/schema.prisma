@@ -8,118 +8,239 @@ datasource db {
 }
 
 model User {
-  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  fullname    String
-  email       String    @unique
-  password    String
-  clerkId     String    @unique
-  role        Role      
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id            String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  fullname      String
+  clerkId       String      @unique
+  type          String
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  stripeId      String?
   
-  // Relations
-  stripeId    String?   // Optional field for Stripe ID
-  lawFirm     LawFirm?  @relation(fields: [lawFirmId], references: [id], onDelete: Cascade)
-  lawFirmId   String?   @db.Uuid
+  role          UserRole    @default(CLIENT)
 
-  bookings     Booking[]        
-  conversations Conversation[]  
-  messages     Message[]        // Change from 'Message' to 'messages' to match plural convention
+  campaign      Campaign[]
+  subscription  Billings?
+  
+  ChatRoom      ChatRoom[]  @relation("UserChatRooms")
+  Case          Case[]      @relation("LawyerCases")
+  clientCases   Case[]      @relation("ClientCases")
+  ChatMessage   ChatMessage[]
+  Document      Document[]   
+  deletedAt     DateTime?    @db.Timestamp(6)
+
+  clientBookings Bookings[] @relation("ClientBookings")
+  lawyerBookings Bookings[] @relation("LawyerBookings")
+
+  LawFirm LawFirm[] @relation("LawFirmLawyers")
+
+  Bookmark Bookmark[]
+  lawyerBookmarks Bookmark[] @relation("LawyerBookmark")
+
+  @@index([clerkId])
+}
+
+model Bookmark {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String   @db.Uuid
+  case       Case?    @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  caseId     String?  @db.Uuid
+  document   Document? @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  documentId String?  @db.Uuid
+  lawyer     User?    @relation("LawyerBookmark", fields: [lawyerId], references: [id], onDelete: Cascade)
+  lawyerId   String?  @db.Uuid
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([userId]) 
+}
+
+model Case {
+  id            String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String
+  description   String?
+  icon          String?
+  lawyer        User?     @relation("LawyerCases", fields: [lawyerId], references: [id], onDelete: Cascade)
+  lawyerId      String?   @db.Uuid
+  client        User?     @relation("ClientCases", fields: [clientId], references: [id], onDelete: Cascade)
+  clientId      String?   @db.Uuid
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  chatRoom      ChatRoom?
+  chatRoomId    String?   @db.Uuid @unique
+  
+  Campaign      Campaign[]
+  Document      Document[]
+  HelpDesk      HelpDesk[]
+  schedule      Schedule[]
+  FilterQuestions FilterQuestions[]
+  LawFirm LawFirm[] @relation("LawFirmCases")
+
+  Bookmark Bookmark[]
+
+  @@index([lawyerId]) 
+  @@index([clientId]) 
 }
 
 model LawFirm {
-  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name      String
-  address   String
-  phone     String
-  email     String    @unique
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  
-  // Relations
-  users     User[]       
-  bookings  Booking[]     
-  chatBots  ChatBot[]     
-  helpDesks HelpDesk[]   
-  lawyers   Lawyer[]  // Change from 'Lawyer' to 'lawyers' to match plural convention
+  id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String
+  address     String?
+  phoneNumber String?
+  email       String?
+  website     String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  lawyers     User[]     @relation("LawFirmLawyers")
+  cases       Case[]     @relation("LawFirmCases")
 }
 
-model Lawyer {
-  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  bio       String
-  rating    Float     @default(0)
-  lawFirm   LawFirm?  @relation(fields: [lawFirmId], references: [id], onDelete: Cascade)
-  lawFirmId String?   @db.Uuid
-  
-  // Relations
-  bookings  Booking[]  // Change from 'Booking' to 'bookings' to match plural convention
+model Schedule {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  case            Case?    @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  caseId         String?   @db.Uuid
+  userId         String    @db.Uuid 
+  scheduledAt    DateTime 
+  duration        Int    
+  status          ScheduleStatus @default(PENDING)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([caseId]) 
+  @@index([userId])
 }
 
-model Booking {
-  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+model Document {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String?
+  file          String
+  description   String?
+  User          User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String?  @db.Uuid
+  case          Case?    @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  caseId        String?  @db.Uuid
+  createdAt     DateTime @default(now())
+
+  Bookmark Bookmark[]
+
+  @@index([userId]) 
+  @@index([caseId])
+}
+
+model ChatRoom {
+  id             String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  users          User[]     @relation("UserChatRooms")
+  case           Case?      @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  caseId        String?     @db.Uuid @unique
+
+  messages       ChatMessage[]
+
+  @@index([caseId]) 
+}
+
+model ChatMessage {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  message       String
+  sender        User     @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  senderId      String    @db.Uuid
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  chatRoom      ChatRoom  @relation(fields: [chatRoomId], references: [id], onDelete: Cascade)
+  chatRoomId    String    @db.Uuid
+
+  @@index([senderId]) 
+  @@index([chatRoomId])
+}
+
+model Bookings {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   date       DateTime
   slot       String
-  status     BookingStatus  
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId     String   @db.Uuid
-  lawyer     Lawyer?  @relation(fields: [lawyerId], references: [id], onDelete: Cascade)
-  lawyerId   String?  @db.Uuid
-  lawFirm    LawFirm  @relation(fields: [lawFirmId], references: [id], onDelete: Cascade)
-  lawFirmId  String   @db.Uuid
+  caseId     String?   @db.Uuid
+  createdAt  DateTime  @default(now())
+
+  client     User      @relation("ClientBookings", fields: [clientId], references: [id], onDelete: Cascade)
+  clientId   String    @db.Uuid
   
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  lawyer     User      @relation("LawyerBookings", fields: [lawyerId], references: [id], onDelete: Cascade)
+  lawyerId   String    @db.Uuid
+  
+  status      BookingStatus @default(PENDING)
+
+  @@index([clientId]) 
+  @@index([lawyerId])
 }
 
-model ChatBot {
-  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  welcomeMessage String?
-  icon           String?
-  background     String?
-  textColor      String?
-  helpdesk       Boolean  @default(false)
-  lawFirm        LawFirm? @relation(fields: [lawFirmId], references: [id], onDelete: Cascade)
-  lawFirmId      String?  @db.Uuid
+model Billings {
+  id           String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  plan         Plans   @default(STANDARD)
+  credits      Int     @default(10)
+  User         User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String? @unique @db.Uuid
+
+  @@index([userId])
 }
 
 model HelpDesk {
-  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  question   String
-  answer     String
-  lawFirm    LawFirm?  @relation(fields: [lawFirmId], references: [id], onDelete: Cascade)
-  lawFirmId  String?   @db.Uuid
+  id           String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  question     String
+  answer       String
+  case         Case?   @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  caseId       String? @db.Uuid
+
+  @@index([caseId])
 }
 
-model Conversation {
-  id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  
-  // Relations
-  participants User[]    
-  messages     Message[]  // Change from 'Message' to 'messages' to match plural convention
+model FilterQuestions {
+  id           String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  question     String
+  answered     String?
+
+  case         Case?   @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  caseId       String? @db.Uuid
+
+  @@index([caseId])
 }
 
-model Message {
-  id            String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  content       String
-  sentAt        DateTime   @default(now())
-  seen          Boolean    @default(false)
-  sender        User       @relation(fields: [senderId], references: [id], onDelete: Cascade)
-  senderId      String     @db.Uuid
-  conversation  Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  conversationId String    @db.Uuid
+model Campaign {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String
+  users         String[] 
+  case          Case[]
+  template      String?
+  User          User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String?  @db.Uuid
+  createdAt     DateTime @default(now())
+
+  @@index([userId])
 }
 
-enum Role {
-  USER
-  LAWYER
+enum Plans {
+  STANDARD
+  PRO
+  ULTIMATE
+}
+
+enum ScheduleStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+enum UserRole {
   ADMIN
-  OFFICE
+  LAWYER
+  CLIENT
 }
 
 enum BookingStatus {
   PENDING
-  CONFIRMED
-  CANCELLED
+  ACCEPTED
+  REJECTED
 }

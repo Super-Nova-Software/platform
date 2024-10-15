@@ -7,7 +7,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { ArrowLeft, ArrowRight } from 'lucide-react'
+import { ArrowBigLeftIcon, ArrowLeft, ArrowRight } from 'lucide-react'
 import Image from 'next/image'
 
 type Props = {

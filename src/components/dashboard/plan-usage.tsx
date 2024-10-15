@@ -4,14 +4,14 @@ import { ProgressBar } from '../progress'
 type PlanUsageProps = {
   plan: 'STANDARD' | 'PRO' | 'ULTIMATE'
   credits: number
-  domains: number
+  Cases: number
   clients: number
 }
 
 export const PlanUsage = ({
   plan,
   credits,
-  domains,
+  Cases,
   clients,
 }: PlanUsageProps) => {
   console.log(credits)
@@ -24,8 +24,8 @@ export const PlanUsage = ({
       />
       <ProgressBar
         end={plan == 'STANDARD' ? 1 : plan == 'PRO' ? 2 : 100}
-        label="Domains"
-        credits={domains}
+        label="Cases"
+        credits={Cases}
       />
       <ProgressBar
         end={plan == 'STANDARD' ? 10 : plan == 'PRO' ? 50 : 500}

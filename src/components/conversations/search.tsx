@@ -3,16 +3,17 @@ import { FieldValues, UseFormRegister } from 'react-hook-form'
 
 type Props = {
   register: UseFormRegister<FieldValues>
-  domains?:
+  cases?:
     | {
         name: string
         id: string
-        icon: string
+        description: string | null
+        icon: string | null
       }[]
     | undefined
 }
 
-const ConversationSearch = ({ register, domains }: Props) => {
+const ConversationSearch = ({ register, cases }: Props) => {
   return (
     <div className="flex flex-col py-3">
       <select
@@ -23,14 +24,14 @@ const ConversationSearch = ({ register, domains }: Props) => {
           disabled
           selected
         >
-          Domain name
+          Cases name
         </option>
-        {domains?.map((domain) => (
+        {cases?.map((caseItem) => (
           <option
-            value={domain.id}
-            key={domain.id}
+            value={caseItem.id}
+            key={caseItem.id}
           >
-            {domain.name}
+            {caseItem.name}
           </option>
         ))}
       </select>

@@ -2,7 +2,7 @@
 import { client } from '@/lib/prisma'
 import { clerkClient, currentUser } from '@clerk/nextjs/server'
 
-export const onIntegrateDomain = async (domain: string, icon: string) => {
+export const onIntegrateDomain = async (domain: string, description: string) => {
   const user = await currentUser()
   if (!user) return
   try {
@@ -13,7 +13,7 @@ export const onIntegrateDomain = async (domain: string, icon: string) => {
       select: {
         _count: {
           select: {
-            domains: true,
+            Case: true,
           },
         },
         subscription: {
@@ -26,7 +26,7 @@ export const onIntegrateDomain = async (domain: string, icon: string) => {
     const domainExists = await client.user.findFirst({
       where: {
         clerkId: user.id,
-        domains: {
+        Case: {
           some: {
             name: domain,
           },
@@ -37,24 +37,33 @@ export const onIntegrateDomain = async (domain: string, icon: string) => {
     if (!domainExists) {
       if (
         (subscription?.subscription?.plan == 'STANDARD' &&
-          subscription._count.domains < 1) ||
+          subscription._count.Case < 1) ||
         (subscription?.subscription?.plan == 'PRO' &&
-          subscription._count.domains < 5) ||
+          subscription._count.Case < 5) ||
         (subscription?.subscription?.plan == 'ULTIMATE' &&
-          subscription._count.domains < 10)
+          subscription._count.Case < 10)
       ) {
         const newDomain = await client.user.update({
           where: {
             clerkId: user.id,
           },
           data: {
-            domains: {
+            Case: {
               create: {
                 name: domain,
-                icon,
-                chatBot: {
+                description,
+                chatRoom: {
                   create: {
-                    welcomeMessage: 'Hey there, have  a question? Text us here',
+                    messages: {
+                      create: {
+                        message: 'Hi there, how can we help you?',
+                        sender: {
+                          connect: {
+                            clerkId: user.id,
+                          },
+                        },
+                      },
+                    },
                   },
                 },
               },
@@ -80,7 +89,6 @@ export const onIntegrateDomain = async (domain: string, icon: string) => {
     console.log(error)
   }
 }
-
 export const onGetSubscriptionPlan = async () => {
   try {
     const user = await currentUser()
@@ -105,27 +113,28 @@ export const onGetSubscriptionPlan = async () => {
   }
 }
 
-export const onGetAllAccountDomains = async () => {
+export const onGetAllAccountCase = async () => {
   const user = await currentUser()
   if (!user) return
   try {
-    const domains = await client.user.findUnique({
+    const cases = await client.user.findUnique({
       where: {
         clerkId: user.id,
       },
       select: {
         id: true,
-        domains: {
+        Case: {
           select: {
             name: true,
+            description: true,
             icon: true,
             id: true,
-            customer: {
+            client: {
               select: {
-                chatRoom: {
+                ChatRoom: {
                   select: {
                     id: true,
-                    live: true,
+                    // live: true,
                   },
                 },
               },
@@ -134,7 +143,7 @@ export const onGetAllAccountDomains = async () => {
         },
       },
     })
-    return { ...domains }
+    return { ...cases }
   } catch (error) {
     console.log(error)
   }
@@ -167,25 +176,22 @@ export const onGetCurrentDomainInfo = async (domain: string) => {
             plan: true,
           },
         },
-        domains: {
+        Case: {
           where: {
             name: {
               contains: domain,
             },
-          },
+          }, 
           select: {
             id: true,
             name: true,
-            icon: true,
-            userId: true,
-            products: true,
-            chatBot: {
+            description: true,
+            client: {
               select: {
                 id: true,
-                welcomeMessage: true,
-                icon: true,
               },
             },
+            Document: true,
           },
         },
       },
@@ -197,11 +203,10 @@ export const onGetCurrentDomainInfo = async (domain: string) => {
     console.log(error)
   }
 }
-
 export const onUpdateDomain = async (id: string, name: string) => {
   try {
     //check if domain with name exists
-    const domainExists = await client.domain.findFirst({
+    const domainExists = await client.case.findFirst({
       where: {
         name: {
           contains: name,
@@ -210,7 +215,7 @@ export const onUpdateDomain = async (id: string, name: string) => {
     })
 
     if (!domainExists) {
-      const domain = await client.domain.update({
+      const domain = await client.case.update({
         where: {
           id,
         },
@@ -241,60 +246,24 @@ export const onUpdateDomain = async (id: string, name: string) => {
   }
 }
 
-export const onChatBotImageUpdate = async (id: string, icon: string) => {
-  const user = await currentUser()
-
-  if (!user) return
-
-  try {
-    const domain = await client.domain.update({
-      where: {
-        id,
-      },
-      data: {
-        chatBot: {
-          update: {
-            data: {
-              icon,
-            },
-          },
-        },
-      },
-    })
-
-    if (domain) {
-      return {
-        status: 200,
-        message: 'Domain updated',
-      }
-    }
-
-    return {
-      status: 400,
-      message: 'Oops something went wrong!',
-    }
-  } catch (error) {
-    console.log(error)
-  }
-}
 
 export const onUpdateWelcomeMessage = async (
   message: string,
   domainId: string
 ) => {
   try {
-    const update = await client.domain.update({
+    const update = await client.case.update({
       where: {
         id: domainId,
       },
       data: {
-        chatBot: {
-          update: {
-            data: {
-              welcomeMessage: message,
-            },
-          },
-        },
+        // chatBot: {
+        //   update: {
+        //     data: {
+        //       welcomeMessage: message,
+        //     },
+        //   },
+        // },
       },
     })
 
@@ -324,9 +293,10 @@ export const onDeleteUserDomain = async (id: string) => {
 
     if (validUser) {
       //check that domain belongs to this user and delete
-      const deletedDomain = await client.domain.delete({
+      const deletedDomain = await client.case.delete({
         where: {
-          userId: validUser.id,
+          clientId: validUser.id,
+          lawyerId: validUser.id,
           id,
         },
         select: {
@@ -352,12 +322,12 @@ export const onCreateHelpDeskQuestion = async (
   answer: string
 ) => {
   try {
-    const helpDeskQuestion = await client.domain.update({
+    const helpDeskQuestion = await client.case.update({
       where: {
         id,
       },
       data: {
-        helpdesk: {
+        HelpDesk: {
           create: {
             question,
             answer,
@@ -365,7 +335,7 @@ export const onCreateHelpDeskQuestion = async (
         },
       },
       include: {
-        helpdesk: {
+        HelpDesk: {
           select: {
             id: true,
             question: true,
@@ -379,7 +349,7 @@ export const onCreateHelpDeskQuestion = async (
       return {
         status: 200,
         message: 'New help desk question added',
-        questions: helpDeskQuestion.helpdesk,
+        questions: helpDeskQuestion.HelpDesk,
       }
     }
 
@@ -396,7 +366,7 @@ export const onGetAllHelpDeskQuestions = async (id: string) => {
   try {
     const questions = await client.helpDesk.findMany({
       where: {
-        domainId: id,
+        caseId: id,
       },
       select: {
         question: true,
@@ -417,19 +387,19 @@ export const onGetAllHelpDeskQuestions = async (id: string) => {
 
 export const onCreateFilterQuestions = async (id: string, question: string) => {
   try {
-    const filterQuestion = await client.domain.update({
+    const filterQuestion = await client.case.update({
       where: {
         id,
       },
       data: {
-        filterQuestions: {
+        FilterQuestions: {
           create: {
             question,
           },
         },
       },
       include: {
-        filterQuestions: {
+        FilterQuestions: {
           select: {
             id: true,
             question: true,
@@ -442,7 +412,7 @@ export const onCreateFilterQuestions = async (id: string, question: string) => {
       return {
         status: 200,
         message: 'Filter question added',
-        questions: filterQuestion.filterQuestions,
+        questions: filterQuestion.FilterQuestions,
       }
     }
     return {
@@ -458,7 +428,7 @@ export const onGetAllFilterQuestions = async (id: string) => {
   try {
     const questions = await client.filterQuestions.findMany({
       where: {
-        domainId: id,
+        caseId: id,
       },
       select: {
         question: true,
@@ -507,17 +477,17 @@ export const onCreateNewDomainProduct = async (
   price: string
 ) => {
   try {
-    const product = await client.domain.update({
+    const product = await client.case.update({
       where: {
         id,
       },
       data: {
-        products: {
-          create: {
+        Document: {
+          create: [{
             name,
-            image,
-            price: parseInt(price),
-          },
+            file: image,
+            description: ''
+          }],
         },
       },
     })

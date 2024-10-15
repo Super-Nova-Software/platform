@@ -40,20 +40,14 @@ export const useSignUpForm = () => {
       await signUp.prepareEmailAddressVerification({ strategy: 'email_code' })
 
       onNext((prev) => prev + 1)
-    } catch (error) {
-      if (error instanceof Error) {
-        toast({
-          title: 'Error',
-          description: error.message,
-        })
-      } else {
-        toast({
-          title: 'Error',
-          description: 'An unknown error occurred',
-        })
-      }
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: error.errors[0].longMessage,
+      })
     }
   }
+
   const onHandleSubmit = methods.handleSubmit(
     async (values: UserRegistrationProps) => {
       if (!isLoaded) return
@@ -68,7 +62,7 @@ export const useSignUpForm = () => {
           return { message: 'Something went wrong!' }
         }
 
-        if (completeSignUp.status === 'complete') {
+        if (completeSignUp.status == 'complete') {
           if (!signUp.createdUserId) return
 
           const registered = await onCompleteUserRegistration(
@@ -77,7 +71,7 @@ export const useSignUpForm = () => {
             values.type
           )
 
-          if (registered?.status === 200 && registered.user) {
+          if (registered?.status == 200 && registered.user) {
             await setActive({
               session: completeSignUp.createdSessionId,
             })
@@ -86,27 +80,21 @@ export const useSignUpForm = () => {
             router.push('/dashboard')
           }
 
-          if (registered?.status === 400) {
+          if (registered?.status == 400) {
             toast({
               title: 'Error',
               description: 'Something went wrong!',
             })
           }
         }
-      } catch (error: unknown) {
-        if (error instanceof Error && 'errors' in error && Array.isArray(error.errors) && error.errors.length > 0 && 'longMessage' in error.errors[0]) {
-          toast({
-            title: 'Error',
-            description: error.errors[0].longMessage,
-          })
-        } else {
-          toast({
-            title: 'Error',
-            description: 'An unknown error occurred',
-          })
-        }
+      } catch (error: any) {
+        toast({
+          title: 'Error',
+          description: error.errors[0].longMessage,
+        })
       }
-    }  )
+    }
+  )
   return {
     methods,
     onHandleSubmit,

@@ -7,7 +7,9 @@ import { SystemMode } from '../themes-placeholder/systemmode'
 import { LightMode } from '../themes-placeholder/lightmode'
 import { DarkMode } from '../themes-placeholder/darkmode'
 
-const DarkModetoggle = () => {
+type Props = {}
+
+const DarkModetoggle = (props: Props) => {
   const { setTheme, theme } = useThemeMode()
 
   return (

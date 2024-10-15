@@ -7,53 +7,45 @@ import IntegrationsIcon from '@/icons/integrations-icon'
 import SettingsIcon from '@/icons/settings-icon'
 import StarIcon from '@/icons/star-icon'
 import TimerIcon from '@/icons/timer-icon'
-import { Role } from '@prisma/client'
 
 type SIDE_BAR_MENU_PROPS = {
-  label: string;
-  icon: JSX.Element;
-  path: string;
-  roles?: Role[]
-};
+  label: string
+  icon: JSX.Element
+  path: string
+}
 
 export const SIDE_BAR_MENU: SIDE_BAR_MENU_PROPS[] = [
   {
     label: 'Dashboard',
     icon: <DashboardIcon />,
     path: 'dashboard',
-    roles: ['USER', 'LAWYER', 'ADMIN', 'OFFICE'],
   },
   {
     label: 'Conversations',
     icon: <ChatIcon />,
-    path: 'conversations',
-    roles: ['USER', 'LAWYER', 'ADMIN', 'OFFICE'],
+    path: 'conversation',
   },
   {
     label: 'Integrations',
     icon: <IntegrationsIcon />,
-    path: 'integrations',
-    roles: ['USER', 'LAWYER', 'ADMIN', 'OFFICE'],
+    path: 'integration',
   },
   {
     label: 'Settings',
     icon: <SettingsIcon />,
     path: 'settings',
-    roles: ['USER', 'LAWYER', 'ADMIN', 'OFFICE'],
   },
   {
     label: 'Appointments',
     icon: <CalIcon />,
-    path: 'appointments',
-    roles: ['LAWYER', 'ADMIN', 'OFFICE'],
+    path: 'appointment',
   },
   {
     label: 'Email Marketing',
     icon: <EmailIcon />,
     path: 'email-marketing',
-    roles: ['ADMIN'],
   },
-];
+]
 
 type TABS_MENU_PROPS = {
   label: string

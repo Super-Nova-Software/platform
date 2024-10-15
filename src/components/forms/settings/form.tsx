@@ -22,7 +22,7 @@ type Props = {
   id: string
   name: string
   plan: 'STANDARD' | 'PRO' | 'ULTIMATE'
-  chatBot: {
+  chatBot?: {
     id: string
     icon: string | null
     welcomeMessage: string | null
@@ -65,7 +65,7 @@ const SettingsForm = ({ id, name, chatBot, plan }: Props) => {
         <div className="grid md:grid-cols-2">
           <div className="col-span-1 flex flex-col gap-5 order-last md:order-first">
             <EditChatbotIcon
-              chatBot={chatBot}
+              chatBot={chatBot || null}
               register={register}
               errors={errors}
             />
