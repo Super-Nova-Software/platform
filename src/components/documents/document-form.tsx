@@ -17,7 +17,7 @@ type CreateProductFormProps = {
   id: string
 }
 
-export const CreateProductForm = ({ id }: CreateProductFormProps) => {
+export const CreateDocumentForm = ({ id }: CreateProductFormProps) => {
   const { onCreateNewProduct, register, errors, loading } = useProducts(id)
   return (
     <form
@@ -30,16 +30,16 @@ export const CreateProductForm = ({ id }: CreateProductFormProps) => {
         label="Name"
         name="name"
         errors={errors}
-        placeholder="Your product name"
+        placeholder="Your document name"
         type="text"
       />
       <div className="flex flex-col items-start">
         <Label
           htmlFor="upload-product"
-          className="flex gap-2 p-3 rounded-lg bg-peach text-gray-600 cursor-pointer font-semibold text-sm items-center"
+          className="flex gap-2 p-3 rounded-lg bg-peach cursor-pointer font-semibold text-sm items-center"
         >
           <Input
-            {...register('image')}
+            {...register('file')}
             className="hidden"
             type="file"
             id="upload-product"
@@ -49,7 +49,7 @@ export const CreateProductForm = ({ id }: CreateProductFormProps) => {
         </Label>
         <ErrorMessage
           errors={errors}
-          name="image"
+          name="file"
           render={({ message }) => (
             <p className="text-red-400 mt-2">
               {message === 'Required' ? '' : message}
@@ -60,17 +60,17 @@ export const CreateProductForm = ({ id }: CreateProductFormProps) => {
       <FormGenerator
         inputType="input"
         register={register}
-        label="Price"
-        name="price"
+        label="Description"
+        name="description"
         errors={errors}
-        placeholder="0.00"
+        placeholder="General case file"
         type="text"
       />
       <Button
         type="submit"
         className="w-full"
       >
-        <Loader loading={loading}>Create Product</Loader>
+        <Loader loading={loading}>Create Document</Loader>
       </Button>
     </form>
   )

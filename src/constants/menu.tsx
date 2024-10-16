@@ -52,6 +52,46 @@ type TABS_MENU_PROPS = {
   icon?: JSX.Element
 }
 
+
+type INTERNAL_NAVBAR_PROPS = {
+  id: number
+  name: string
+  link: string
+  emoji?: string
+}
+export const INTERNAL_NAVBAR: INTERNAL_NAVBAR_PROPS[] = [
+  {
+    id: 1,
+    name: 'Overview',
+    link: 'test',
+    emoji: '⚖',
+  },
+  {
+    id: 2,
+    name: 'Conversation',
+    link: 'conversation',
+    emoji: '✉',
+  },
+  {
+    id: 3,
+    name: 'Schedule',
+    link: 'schedule',
+    emoji: '🗓',
+  },
+  {
+    id: 4,
+    name: 'Documents',
+    link: 'document',
+    emoji: '📁',
+  },
+  {
+    id: 5,
+    name: 'setting',
+    link: 'setting',
+    emoji: '⚙',
+  },
+]
+
 export const TABS_MENU: TABS_MENU_PROPS[] = [
   {
     label: 'unread',

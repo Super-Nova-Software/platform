@@ -473,11 +473,15 @@ export const onGetPaymentConnected = async () => {
 export const onCreateNewDomainProduct = async (
   id: string,
   name: string,
-  image: string,
-  price: string
+  file: string,
+  description: string
 ) => {
   try {
-    const product = await client.case.update({
+    const user = await currentUser()
+    if (!user) {
+      throw new Error('User not found')
+    }
+    const document = await client.case.update({
       where: {
         id,
       },
@@ -485,17 +489,22 @@ export const onCreateNewDomainProduct = async (
         Document: {
           create: [{
             name,
-            file: image,
-            description: ''
+            file: file,
+            User:{  
+              connect:{
+                clerkId:user.id
+              }
+            },
+            description: description,
           }],
         },
       },
     })
 
-    if (product) {
+    if (document) {
       return {
         status: 200,
-        message: 'Product successfully created',
+        message: 'Document successfully created',
       }
     }
   } catch (error) {

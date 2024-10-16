@@ -1,5 +1,4 @@
 import {
-  onChatBotImageUpdate,
   onCreateFilterQuestions,
   onCreateHelpDeskQuestion,
   onCreateNewDomainProduct,
@@ -16,8 +15,8 @@ import {
   ChangePasswordSchema,
 } from '@/schemas/auth.schema'
 import {
-  AddProductProps,
-  AddProductSchema,
+  AddDocumentProps,
+  AddDocumentSchema,
   DomainSettingsProps,
   DomainSettingsSchema,
   FilterQuestionsProps,
@@ -105,14 +104,8 @@ export const useSettings = (id: string) => {
     }
     if (values.image[0]) {
       const uploaded = await upload.uploadFile(values.image[0])
-      const image = await onChatBotImageUpdate(id, uploaded.uuid)
-      if (image) {
-        toast({
-          title: image.status == 200 ? 'Success' : 'Error',
-          description: image.message,
-        })
-        setLoading(false)
-      }
+
+
     }
     if (values.welcomeMessage) {
       const message = await onUpdateWelcomeMessage(values.welcomeMessage, id)
@@ -264,19 +257,19 @@ export const useProducts = (domainId: string) => {
     reset,
     formState: { errors },
     handleSubmit,
-  } = useForm<AddProductProps>({
-    resolver: zodResolver(AddProductSchema),
+  } = useForm<AddDocumentProps>({
+    resolver: zodResolver(AddDocumentSchema),
   })
 
   const onCreateNewProduct = handleSubmit(async (values) => {
     try {
       setLoading(true)
-      const uploaded = await upload.uploadFile(values.image[0])
+      const uploaded = await upload.uploadFile(values.file[0])
       const product = await onCreateNewDomainProduct(
         domainId,
         values.name,
         uploaded.uuid,
-        values.price
+        values.description,
       )
       if (product) {
         reset()
@@ -284,6 +277,9 @@ export const useProducts = (domainId: string) => {
           title: 'Success',
           description: product.message,
         })
+        useEffect(() => {
+          onCreateNewProduct()
+        }, [])
         setLoading(false)
       }
     } catch (error) {

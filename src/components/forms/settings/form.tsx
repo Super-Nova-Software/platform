@@ -44,7 +44,7 @@ const SettingsForm = ({ id, name, chatBot, plan }: Props) => {
       onSubmit={onUpdateSettings}
     >
       <div className="flex flex-col gap-3">
-        <h2 className="font-bold text-2xl">Domain Settings</h2>
+        <h2 className="font-bold text-2xl">Case Settings</h2>
         <Separator orientation="horizontal" />
         <DomainUpdate
           name={name}
@@ -93,7 +93,7 @@ const SettingsForm = ({ id, name, chatBot, plan }: Props) => {
           type="button"
           className="px-10 h-[50px]"
         >
-          <Loader loading={deleting}>Delete Domain</Loader>
+          <Loader loading={deleting}>Delete Case</Loader>
         </Button>
         <Button
           type="submit"

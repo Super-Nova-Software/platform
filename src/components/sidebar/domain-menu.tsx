@@ -31,8 +31,8 @@ const DomainMenu = ({ Cases, min }: Props) => {
       <div className="flex justify-between w-full items-center">
         {!min && <p className="text-xs text-gray-500">CASES</p>}
         <AppDrawer
-          description="add in your domain address to integrate your chatbot"
-          title="Add your business domain"
+          description="add in your Case address to integrate your chatbot"
+          title="Add your business Case"
           onOpen={
             <div className="cursor-pointer text-gray-500 rounded-full border-2">
               <Plus />
@@ -47,8 +47,8 @@ const DomainMenu = ({ Cases, min }: Props) => {
               <FormGenerator
                 inputType="input"
                 register={register}
-                label="Domain"
-                name="domain"
+                label="Case"
+                name="Case"
                 errors={errors}
                 placeholder="mydomain.com"
                 type="text"
@@ -62,7 +62,7 @@ const DomainMenu = ({ Cases, min }: Props) => {
                 type="submit"
                 className="w-full"
               >
-                Add Domain
+                Add Case
               </Button>
             </form>
           </Loader>
@@ -72,7 +72,7 @@ const DomainMenu = ({ Cases, min }: Props) => {
         {Cases &&
           Cases.map((Case) => (
             <Link
-              href={`/settings/${Case.name.split('.')[0]}`}
+              href={`/${Case.name.split('.')[0]}`}
               key={Case.id}
               className={cn(
                 'flex gap-3 hover:bg-white rounded-full transition duration-100 ease-in-out cursor-pointer ',

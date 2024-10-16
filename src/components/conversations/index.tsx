@@ -35,21 +35,23 @@ const ConversationMenu = ({ cases }: Props) => {
           />
           <div className="flex flex-col">
             <Loader loading={loading}>
-              {chatRooms.length ? (
-                chatRooms.map((room) => (
+            {chatRooms.length ? (
+              chatRooms.map((room) => (
+                room.chatRoom && room.chatRoom.length > 0 ? (
                   <ChatCard
-                    seen={room.chatRoom[0].message[0]?.seen}
-                    id={room.chatRoom[0].id}
-                    onChat={() => onGetActiveChatMessages(room.chatRoom[0].id)}
-                    createdAt={room.chatRoom[0].message[0]?.createdAt}
-                    key={room.chatRoom[0].id}
-                    title={room.email!}
-                    description={room.chatRoom[0].message[0]?.message}
+                    seen={room.chatRoom[0]?.message[0]?.seen}
+                    id={room.chatRoom[0]?.id}
+                    onChat={() => onGetActiveChatMessages(room.chatRoom[0]?.id)}
+                    createdAt={room.chatRoom[0]?.message[0]?.createdAt}
+                    key={room.chatRoom[0]?.id}
+                    title={room.email ?? 'Unknown'}
+                    description={room.chatRoom[0]?.message[0]?.message}
                   />
-                ))
-              ) : (
-                <CardDescription>No chats for you domain</CardDescription>
-              )}
+                ) : null
+              ))
+            ) : (
+              <CardDescription>No chats for your case</CardDescription>
+            )}
             </Loader>
           </div>
         </TabsContent>

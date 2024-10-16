@@ -41,12 +41,20 @@ export const useConversation = () => {
       setLoading(true)
       try {
         const rooms = await onGetDomainChatRooms(value.domain)
-        if (rooms) {
+        if (rooms && rooms.client) {
           setLoading(false)
-          setChatRooms(rooms.customer)
+          setChatRooms([{
+            chatRoom: rooms.client.ChatRoom.map(chatRoom => ({
+              ...chatRoom,
+              message: chatRoom.messages
+            })),
+            email: null
+          }])
         }
       } catch (error) {
         console.log(error)
+      } finally {
+        setLoading(false)
       }
     })
     return () => search.unsubscribe()
@@ -59,13 +67,16 @@ export const useConversation = () => {
       if (messages) {
         setChatRoom(id)
         loadMessages(false)
-        setChats(messages[0].message)
+        setChats(messages[0].messages.map(message => ({
+          ...message,
+          role: null
+        })))
       }
     } catch (error) {
       console.log(error)
     }
-  }
-  return {
+  } 
+   return {
     register,
     chatRooms,
     loading,
@@ -164,8 +175,8 @@ export const useChatWindow = () => {
 
         await onRealTimeChat(
           chatRoom!,
-          message.message[0].message,
-          message.message[0].id,
+          message.messages[0].message,
+          message.messages[0].id,
           'assistant'
         )
       }

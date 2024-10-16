@@ -14,10 +14,10 @@ export type HelpDeskQuestionsProps = {
   answer: string
 }
 
-export type AddProductProps = {
+export type AddDocumentProps = {
   name: string
-  image: any
-  price: string
+  file: any
+  description: string
 }
 
 export type FilterQuestionsProps = {
@@ -92,11 +92,11 @@ export const FilterQuestionsSchema = z.object({
   question: z.string().min(1, { message: 'Question cannot be left empty' }),
 })
 
-export const AddProductSchema = z.object({
+export const AddDocumentSchema = z.object({
   name: z
     .string()
     .min(3, { message: 'The name must have atleast 3 characters' }),
-  image: z
+    file: z
     .any()
     .refine((files) => files?.[0]?.size <= MAX_UPLOAD_SIZE, {
       message: 'Your file size must be less then 2MB',
@@ -104,5 +104,5 @@ export const AddProductSchema = z.object({
     .refine((files) => ACCEPTED_FILE_TYPES.includes(files?.[0]?.type), {
       message: 'Only JPG, JPEG & PNG are accepted file formats',
     }),
-  price: z.string(),
+    description: z.string(),
 })

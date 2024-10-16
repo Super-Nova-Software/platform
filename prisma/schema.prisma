@@ -132,6 +132,7 @@ model Document {
 
 model ChatRoom {
   id             String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  live           Boolean   @default(false)
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
   users          User[]     @relation("UserChatRooms")
@@ -152,6 +153,7 @@ model ChatMessage {
   updatedAt     DateTime  @updatedAt
   chatRoom      ChatRoom  @relation(fields: [chatRoomId], references: [id], onDelete: Cascade)
   chatRoomId    String    @db.Uuid
+  seen          Boolean   @default(false)
 
   @@index([senderId]) 
   @@index([chatRoomId])

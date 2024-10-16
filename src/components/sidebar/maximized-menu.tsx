@@ -25,16 +25,12 @@ const MaxMenu = ({ current, Cases, onExpand, onSignOut }: Props) => {
     <div className="py-3 px-4 flex flex-col h-full">
       <div className="flex justify-between items-center">
         <Image
-          src="/images/logo.png"
+          src="/images/Untitled.png"
           alt="LOGO"
           sizes="100vw"
           className="animate-fade-in opacity-0 delay-300 fill-mode-forwards"
-          style={{
-            width: '50%',
-            height: 'auto',
-          }}
-          width={0}
-          height={0}
+          width={100}
+          height={100}
         />
         <Menu
           className="cursor-pointer animate-fade-in opacity-0 delay-300 fill-mode-forwards"

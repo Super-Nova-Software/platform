@@ -51,19 +51,18 @@ export const onGetConversationMode = async (id: string) => {
 
 export const onGetDomainChatRooms = async (id: string) => {
   try {
-    const domains = await client.domain.findUnique({
+    const domains = await client.case.findUnique({
       where: {
         id,
       },
       select: {
-        customer: {
+        client: {
           select: {
-            email: true,
-            chatRoom: {
+            ChatRoom: {
               select: {
                 createdAt: true,
                 id: true,
-                message: {
+                messages: {
                   select: {
                     message: true,
                     createdAt: true,
@@ -87,8 +86,8 @@ export const onGetDomainChatRooms = async (id: string) => {
   } catch (error) {
     console.log(error)
   }
-}
 
+}
 export const onGetChatMessages = async (id: string) => {
   try {
     const messages = await client.chatRoom.findMany({
@@ -98,10 +97,9 @@ export const onGetChatMessages = async (id: string) => {
       select: {
         id: true,
         live: true,
-        message: {
+        messages: {
           select: {
             id: true,
-            role: true,
             message: true,
             createdAt: true,
             seen: true,
@@ -120,7 +118,6 @@ export const onGetChatMessages = async (id: string) => {
     console.log(error)
   }
 }
-
 
 
 export const onViewUnReadMessages = async (id: string) => {
@@ -156,7 +153,7 @@ export const onRealTimeChat = async (
 export const onOwnerSendMessage = async (
   chatroom: string,
   message: string,
-  role: 'assistant' | 'user'
+  sender: string
 ) => {
   try {
     const chat = await client.chatRoom.update({
@@ -164,18 +161,21 @@ export const onOwnerSendMessage = async (
         id: chatroom,
       },
       data: {
-        message: {
+        messages: {
           create: {
             message,
-            role,
+            sender: {
+              connect: {
+                id: sender
+              }
+            }
           },
         },
       },
       select: {
-        message: {
+        messages: {
           select: {
             id: true,
-            role: true,
             message: true,
             createdAt: true,
             seen: true,
